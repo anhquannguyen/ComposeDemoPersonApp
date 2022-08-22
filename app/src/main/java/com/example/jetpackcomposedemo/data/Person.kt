@@ -39,6 +39,8 @@ data class Person(
     val username: String
 ) {
     fun fullName() = "$firstName $lastName"
+
+    fun seeFullAddress() = "${address.streetName}, ${address.streetAddress}, ${address.city}, ${address.state}, ${address.country}"
 }
 
 data class Address(

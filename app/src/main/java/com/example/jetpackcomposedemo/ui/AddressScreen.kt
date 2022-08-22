@@ -19,27 +19,6 @@ import com.example.jetpackcomposedemo.data.PersonData
 @Preview(showBackground = true)
 @Composable
 fun AddressScreen(id: String = "2309") {
-    val address = PersonData.getById(id.toInt()).address
-    Column(Modifier.fillMaxSize()) {
-        RowInfo("Address", "${address.streetName}, ${address.streetAddress}")
-        RowInfo("City", address.city)
-        RowInfo("State", address.state)
-        RowInfo("Country", address.country)
-    }
-}
+    val person = PersonData.getById(id.toInt())
 
-@Composable
-private fun RowInfo(label: String, content: String) {
-    Column {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-        ) {
-            Text(text = label, style = TextStyle(color = Color.Gray))
-            Text(text = content)
-        }
-        Divider()
-
-    }
 }
