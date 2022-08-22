@@ -1,8 +1,6 @@
 package com.example.jetpackcomposedemo.ui
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -12,9 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
@@ -25,25 +26,30 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.example.jetpackcomposedemo.Person
 import com.example.jetpackcomposedemo.R
+import com.example.jetpackcomposedemo.data.RowModel
 import com.example.jetpackcomposedemo.data.PersonData
 
 @Composable
 fun Details(navHostController: NavHostController, id: String) {
     val person = PersonData.getById(id.toInt())
-    val infoMap = mapOf(
-        Pair("Username", person.username),
-        Pair("Gender", person.gender),
-        Pair("Birthday", person.dateOfBirth),
-        Pair("Skills", person.employment.keySkill),
-        Pair("Credit Card", person.creditCard.ccNumber),
-        Pair("Social Insurance Number", person.socialInsuranceNumber),
-        Pair("Address", "See address here >")
-    )
-    val onInfoClick: (String) -> Unit = {
-        if (it == "Address") {
+    val rows = setOf(
+        RowModel(stringResource(id = R.string.username), person.username),
+        RowModel(stringResource(id = R.string.gender), person.gender),
+        RowModel(stringResource(id = R.string.birthday), person.dateOfBirth),
+        RowModel(stringResource(id = R.string.skills), person.employment.keySkill),
+        RowModel(stringResource(id = R.string.credit_card), person.creditCard.ccNumber),
+        RowModel(
+            stringResource(id = R.string.insurance_number),
+            person.socialInsuranceNumber
+        ),
+        RowModel(
+            stringResource(id = R.string.address),
+            person.seeFullAddress(),
+            true
+        ) {
             navHostController.navigate("details/address/${person.id}")
-        }
-    }
+        },
+    )
 
     Column(
         modifier = Modifier
@@ -57,11 +63,12 @@ fun Details(navHostController: NavHostController, id: String) {
                 .height(8.dp)
                 .background(Color.LightGray)
         )
-        BodyDetail(infoMap, onInfoClick)
+        BodyDetail(rows)
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(50.dp))
+                .height(50.dp)
+        )
     }
 }
 
@@ -111,26 +118,40 @@ private fun HeaderDetail(person: Person) {
 }
 
 @Composable
-private fun BodyDetail(info: Map<String, String>, onClick: (String) -> Unit) {
+private fun BodyDetail(info: Set<RowModel>) {
     Column {
         for (i in info) {
-            RowInfo(i.key, i.value, onClick)
+            RowInfo(i.label, i.content, i.shouldShowButton, i.action ?: {})
         }
     }
 }
 
 @Composable
-private fun RowInfo(label: String, content: String, onClick: (String) -> Unit) {
+private fun RowInfo(
+    label: String,
+    content: String,
+    shouldShowButton: Boolean,
+    rowDidTap: () -> Unit
+) {
     Column(Modifier.clickable(onClick = {
-        onClick(label)
+        rowDidTap()
     })) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = label, maxLines = 1, style = TextStyle(color = Color.Gray))
-            Text(text = content, maxLines = 1)
+            Column(modifier = Modifier.fillMaxWidth(0.95f)) {
+                Text(text = label, maxLines = 1, style = TextStyle(color = Color.Gray))
+                Text(text = content, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            if (shouldShowButton) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_next),
+                    contentDescription = "",
+                )
+            }
         }
         Divider()
 

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">JetpackComposeDemo</string>
+
+    <string name="username">Username</string>
+    <string name="gender">Gender</string>
+    <string name="birthday">Birthday</string>
+    <string name="skills">Skills</string>
+    <string name="credit_card">Credit Card</string>
+    <string name="insurance_number">Social Insurance Number</string>
+    <string name="address">Address</string>
+    <string name="see_address_here">See full address here!</string>
 </resources>
